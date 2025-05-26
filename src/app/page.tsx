@@ -1,9 +1,9 @@
-import When3meet from '@/components/When3meet'
+import When4meet from '@/components/When4meet'
 
 export default function Home() {
   return (
     <main>
-      <When3meet />
+      <When4meet />
     </main>
   )
 }

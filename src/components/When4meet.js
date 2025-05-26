@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 
-const When3meet = () => {
+const when4meet = () => {
     // Generate time slots (9 AM to 9 PM in 30-minute intervals)
     const generateTimeSlots = () => {
         const slots = [];
@@ -148,7 +148,7 @@ const When3meet = () => {
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl font-light tracking-wide text-white mb-2">
-                        when3meet
+                        when4meet
                     </h1>
                     <p className="text-gray-400 text-sm">
                         Select your availability • Click and drag to fill
@@ -236,4 +236,4 @@ const When3meet = () => {
     );
 };
 
-export default When3meet;
+export default when4meet;
