@@ -199,143 +199,151 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
 
     return (
         <div className="min-h-screen bg-gray-900 text-white">
-            <div className="max-w-5xl mx-auto p-6">
-                {/* Header */}
-                <div className="mb-8 text-center">
-                    <h1 className="text-4xl font-light tracking-wide text-white mb-2">
-                        {eventData.name}
-                    </h1>
-                    <p className="text-gray-400 text-sm">
-                        Select your availability • Click and drag to fill
-                    </p>
-                </div>
-
-                {/* Availability Type Toggle */}
-                <div className="mb-8 flex justify-center">
-                    <div className="inline-flex rounded-md bg-gray-800 p-1">
-                        <button
-                            onClick={() => setSelectedType('available')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === 'available'
-                                ? 'bg-emerald-600 text-white'
-                                : 'text-gray-400 hover:text-white'
-                                }`}
-                        >
-                            Available
-                        </button>
-                        <button
-                            onClick={() => setSelectedType('if-needed')}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === 'if-needed'
-                                ? 'bg-amber-500 text-white'
-                                : 'text-gray-400 hover:text-white'
-                                }`}
-                        >
-                            If Needed
-                        </button>
-                    </div>
-                </div>
-
-                {/* Action buttons */}
-                <div className="mb-8 flex gap-3 justify-center">
-                    <button
-                        onClick={handleSubmit}
-                        className="px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all duration-200 text-sm font-medium"
-                    >
-                        Save
-                    </button>
-                    <button
-                        onClick={clearAll}
-                        className="px-6 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-all duration-200 text-sm font-medium"
-                    >
-                        Clear
-                    </button>
-                </div>
-
-                {/* Pagination controls */}
-                {totalPages > 1 && (
-                    <div className="mb-4 flex justify-center gap-2">
-                        <button
-                            onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
-                            disabled={currentPage === 0}
-                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            ←
-                        </button>
-                        <span className="px-3 py-1 text-gray-300">
-                            Page {currentPage + 1} of {totalPages}
-                        </span>
-                        <button
-                            onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
-                            disabled={currentPage === totalPages - 1}
-                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            →
-                        </button>
-                    </div>
-                )}
-
-                {/* Grid container */}
-                <div className="overflow-x-auto">
-                    <div className="inline-block min-w-full">
-                        {/* Header with dates */}
-                        <div className="flex border-b border-gray-600">
-                            <div className="w-16 flex-shrink-0 border-r border-gray-600"></div> {/* Empty corner */}
-                            {currentDates.map(date => (
-                                <div
-                                    key={date.toISOString()}
-                                    className="flex-1 min-w-[80px] text-center font-medium text-gray-300 py-3 text-sm border-r border-gray-600"
+            <div className="max-w-7xl mx-auto p-6">
+                <div className="flex gap-8">
+                    {/* Main schedule grid */}
+                    <div className="flex-1">
+                        {/* Pagination controls */}
+                        {totalPages > 1 && (
+                            <div className="mb-4 flex justify-center gap-2">
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                                    disabled={currentPage === 0}
+                                    className="px-3 py-1 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {formatDate(date)}
+                                    ←
+                                </button>
+                                <span className="px-3 py-1 text-gray-300">
+                                    Page {currentPage + 1} of {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+                                    disabled={currentPage === totalPages - 1}
+                                    className="px-3 py-1 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    →
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Grid container */}
+                        <div className="overflow-x-auto">
+                            <div className="inline-block min-w-full">
+                                {/* Header with dates */}
+                                <div className="flex border-b border-gray-600">
+                                    <div className="w-16 flex-shrink-0 border-r border-gray-600"></div> {/* Empty corner */}
+                                    {currentDates.map(date => (
+                                        <div
+                                            key={date.toISOString()}
+                                            className="flex-1 min-w-[80px] text-center font-medium text-gray-300 py-3 text-sm border-r border-gray-600"
+                                        >
+                                            {formatDate(date)}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+
+                                {/* Time slots grid */}
+                                {timeSlots.map((time, timeIndex) => (
+                                    <div key={`time-${timeIndex}-${time}`} className="flex border-b border-gray-700">
+                                        {/* Time label */}
+                                        <div className="w-16 flex-shrink-0 text-right pr-3 py-1 text-xs text-gray-400 font-mono flex items-center justify-end border-r border-gray-600">
+                                            {time}
+                                        </div>
+
+                                        {/* Availability cells for each date */}
+                                        {currentDates.map(date => {
+                                            const firstHalf = isBlockSelected(date, time, 'first');
+                                            const secondHalf = isBlockSelected(date, time, 'second');
+
+                                            return (
+                                                <div
+                                                    key={`${date.toISOString()}-${timeIndex}-${time}`}
+                                                    className="flex-1 min-w-[80px] h-6 border-r border-gray-600"
+                                                >
+                                                    {/* Single column that handles both 15-minute blocks */}
+                                                    <div
+                                                        className={`w-full h-full cursor-pointer transition-all duration-150 ${firstHalf.available && secondHalf.available
+                                                            ? 'bg-emerald-500 hover:bg-emerald-400'
+                                                            : firstHalf.ifNeeded && secondHalf.ifNeeded
+                                                                ? 'bg-amber-500 hover:bg-amber-400'
+                                                                : firstHalf.available || secondHalf.available
+                                                                    ? 'bg-emerald-400 hover:bg-emerald-300'
+                                                                    : firstHalf.ifNeeded || secondHalf.ifNeeded
+                                                                        ? 'bg-amber-400 hover:bg-amber-300'
+                                                                        : 'bg-gray-800 hover:bg-gray-700'
+                                                            }`}
+                                                        onMouseDown={() => handleMouseDown(date, time, 'both')}
+                                                        onMouseEnter={() => handleMouseEnter(date, time, 'both')}
+                                                        onDragStart={(e) => e.preventDefault()}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
-                        {/* Time slots grid */}
-                        {timeSlots.map((time, timeIndex) => (
-                            <div key={`time-${timeIndex}-${time}`} className="flex border-b border-gray-700">
-                                {/* Time label */}
-                                <div className="w-16 flex-shrink-0 text-right pr-3 py-1 text-xs text-gray-400 font-mono flex items-center justify-end border-r border-gray-600">
-                                    {time}
-                                </div>
-
-                                {/* Availability cells for each date */}
-                                {currentDates.map(date => {
-                                    const firstHalf = isBlockSelected(date, time, 'first');
-                                    const secondHalf = isBlockSelected(date, time, 'second');
-
-                                    return (
-                                        <div
-                                            key={`${date.toISOString()}-${timeIndex}-${time}`}
-                                            className="flex-1 min-w-[80px] h-6 border-r border-gray-600"
-                                        >
-                                            {/* Single column that handles both 15-minute blocks */}
-                                            <div
-                                                className={`w-full h-full cursor-pointer transition-all duration-150 ${firstHalf.available && secondHalf.available
-                                                    ? 'bg-emerald-500 hover:bg-emerald-400'
-                                                    : firstHalf.ifNeeded && secondHalf.ifNeeded
-                                                        ? 'bg-amber-500 hover:bg-amber-400'
-                                                        : firstHalf.available || secondHalf.available
-                                                            ? 'bg-emerald-400 hover:bg-emerald-300'
-                                                            : firstHalf.ifNeeded || secondHalf.ifNeeded
-                                                                ? 'bg-amber-400 hover:bg-amber-300'
-                                                                : 'bg-gray-800 hover:bg-gray-700'
-                                                    }`}
-                                                onMouseDown={() => handleMouseDown(date, time, 'both')}
-                                                onMouseEnter={() => handleMouseEnter(date, time, 'both')}
-                                                onDragStart={(e) => e.preventDefault()}
-                                            />
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ))}
+                        {/* Footer info */}
+                        <div className="mt-8 text-center">
+                            <p className="text-gray-500 text-sm">
+                                {availability.size} available blocks, {ifNeeded.size} if-needed blocks
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                {/* Footer info */}
-                <div className="mt-8 text-center">
-                    <p className="text-gray-500 text-sm">
-                        {availability.size} available blocks, {ifNeeded.size} if-needed blocks
-                    </p>
+                    {/* Right sidebar */}
+                    <div className="w-64 flex-shrink-0">
+                        {/* Event name */}
+                        <div className="mb-8">
+                            <h1 className="text-2xl font-light tracking-wide text-white mb-2">
+                                {eventData.name}
+                            </h1>
+                            <p className="text-gray-400 text-sm whitespace-nowrap">
+                                Select availability • Click and drag
+                            </p>
+                        </div>
+
+                        {/* Availability Type Toggle */}
+                        <div className="mb-8">
+                            <div className="inline-flex rounded-md bg-gray-800 p-1 w-full">
+                                <button
+                                    onClick={() => setSelectedType('available')}
+                                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === 'available'
+                                        ? 'bg-emerald-600 text-white'
+                                        : 'text-gray-400 hover:text-white'
+                                        }`}
+                                >
+                                    Available
+                                </button>
+                                <button
+                                    onClick={() => setSelectedType('if-needed')}
+                                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === 'if-needed'
+                                        ? 'bg-amber-500 text-white'
+                                        : 'text-gray-400 hover:text-white'
+                                        }`}
+                                >
+                                    If Needed
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={handleSubmit}
+                                className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all duration-200 text-sm font-medium"
+                            >
+                                Save
+                            </button>
+                            <button
+                                onClick={clearAll}
+                                className="w-full px-6 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-all duration-200 text-sm font-medium"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
