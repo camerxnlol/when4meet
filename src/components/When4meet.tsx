@@ -7,10 +7,13 @@ interface EventData {
 }
 
 interface When4meetProps {
-    eventData?: EventData
+    eventData: EventData
 }
 
 const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
+    const [currentPage, setCurrentPage] = useState(0);
+    const daysPerPage = 7;
+
     // Generate time slots (9 AM to 12 AM in 30-minute intervals)
     const generateTimeSlots = () => {
         const slots: string[] = [];
@@ -29,14 +32,21 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
         return slots;
     };
 
-    // Generate days of the week
-    const generateDays = () => {
-        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        return days;
+    // Format date for display
+    const formatDate = (date: Date) => {
+        return date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
     };
 
     const timeSlots = generateTimeSlots();
-    const days = generateDays();
+    const totalPages = Math.ceil(eventData.dates.length / daysPerPage);
+    const currentDates = eventData.dates.slice(
+        currentPage * daysPerPage,
+        (currentPage + 1) * daysPerPage
+    );
 
     // State to track availability - using a Set for selected 15-minute blocks
     const [availability, setAvailability] = useState<Set<string>>(new Set());
@@ -44,14 +54,15 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
     const [dragMode, setDragMode] = useState<'select' | 'deselect' | null>(null);
 
     // Create unique key for each 15-minute block
-    const createSlotKey = (day: string, time: string, half: string): string => `${day}-${time}-${half}`;
+    const createSlotKey = (date: Date, time: string, half: string): string =>
+        `${date.toISOString()}-${time}-${half}`;
 
     // Handle mouse events for selecting/deselecting time slots
-    const handleMouseDown = (day: string, time: string, half: string) => {
+    const handleMouseDown = (date: Date, time: string, half: string) => {
         if (half === 'both') {
             // Handle full 30-minute block
-            const firstKey = createSlotKey(day, time, 'first');
-            const secondKey = createSlotKey(day, time, 'second');
+            const firstKey = createSlotKey(date, time, 'first');
+            const secondKey = createSlotKey(date, time, 'second');
             const bothSelected = availability.has(firstKey) && availability.has(secondKey);
 
             setIsDragging(true);
@@ -68,7 +79,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
             setAvailability(newAvailability);
         } else {
             // Original logic for individual 15-minute blocks
-            const key = createSlotKey(day, time, half);
+            const key = createSlotKey(date, time, half);
             const isSelected = availability.has(key);
 
             setIsDragging(true);
@@ -84,13 +95,13 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
         }
     };
 
-    const handleMouseEnter = (day: string, time: string, half: string) => {
+    const handleMouseEnter = (date: Date, time: string, half: string) => {
         if (!isDragging) return;
 
         if (half === 'both') {
             // Handle full 30-minute block
-            const firstKey = createSlotKey(day, time, 'first');
-            const secondKey = createSlotKey(day, time, 'second');
+            const firstKey = createSlotKey(date, time, 'first');
+            const secondKey = createSlotKey(date, time, 'second');
             const newAvailability = new Set(availability);
 
             if (dragMode === 'select') {
@@ -103,7 +114,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
             setAvailability(newAvailability);
         } else {
             // Original logic for individual 15-minute blocks
-            const key = createSlotKey(day, time, half);
+            const key = createSlotKey(date, time, half);
             const newAvailability = new Set(availability);
 
             if (dragMode === 'select') {
@@ -147,8 +158,8 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
     };
 
     // Check if a 15-minute block is selected
-    const isBlockSelected = (day: string, time: string, half: string): boolean => {
-        return availability.has(createSlotKey(day, time, half));
+    const isBlockSelected = (date: Date, time: string, half: string): boolean => {
+        return availability.has(createSlotKey(date, time, half));
     };
 
     return (
@@ -157,7 +168,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <h1 className="text-4xl font-light tracking-wide text-white mb-2">
-                        when4meet
+                        {eventData.name}
                     </h1>
                     <p className="text-gray-400 text-sm">
                         Select your availability • Click and drag to fill
@@ -180,18 +191,41 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                     </button>
                 </div>
 
+                {/* Pagination controls */}
+                {totalPages > 1 && (
+                    <div className="mb-4 flex justify-center gap-2">
+                        <button
+                            onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                            disabled={currentPage === 0}
+                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            ←
+                        </button>
+                        <span className="px-3 py-1 text-gray-300">
+                            Page {currentPage + 1} of {totalPages}
+                        </span>
+                        <button
+                            onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+                            disabled={currentPage === totalPages - 1}
+                            className="px-3 py-1 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            →
+                        </button>
+                    </div>
+                )}
+
                 {/* Grid container */}
                 <div className="overflow-x-auto">
                     <div className="inline-block min-w-full">
-                        {/* Header with days */}
+                        {/* Header with dates */}
                         <div className="flex border-b border-gray-600">
                             <div className="w-16 flex-shrink-0 border-r border-gray-600"></div> {/* Empty corner */}
-                            {days.map(day => (
+                            {currentDates.map(date => (
                                 <div
-                                    key={day}
+                                    key={date.toISOString()}
                                     className="flex-1 min-w-[80px] text-center font-medium text-gray-300 py-3 text-sm border-r border-gray-600"
                                 >
-                                    {day}
+                                    {formatDate(date)}
                                 </div>
                             ))}
                         </div>
@@ -204,14 +238,14 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                                     {time}
                                 </div>
 
-                                {/* Availability cells for each day */}
-                                {days.map(day => {
-                                    const firstHalf = isBlockSelected(day, time, 'first');
-                                    const secondHalf = isBlockSelected(day, time, 'second');
+                                {/* Availability cells for each date */}
+                                {currentDates.map(date => {
+                                    const firstHalf = isBlockSelected(date, time, 'first');
+                                    const secondHalf = isBlockSelected(date, time, 'second');
 
                                     return (
                                         <div
-                                            key={`${day}-${timeIndex}-${time}`}
+                                            key={`${date.toISOString()}-${timeIndex}-${time}`}
                                             className="flex-1 min-w-[80px] h-6 border-r border-gray-600"
                                         >
                                             {/* Single column that handles both 15-minute blocks */}
@@ -222,8 +256,8 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                                                         ? 'bg-emerald-400 hover:bg-emerald-300'
                                                         : 'bg-gray-800 hover:bg-gray-700'
                                                     }`}
-                                                onMouseDown={() => handleMouseDown(day, time, 'both')}
-                                                onMouseEnter={() => handleMouseEnter(day, time, 'both')}
+                                                onMouseDown={() => handleMouseDown(date, time, 'both')}
+                                                onMouseEnter={() => handleMouseEnter(date, time, 'both')}
                                                 onDragStart={(e) => e.preventDefault()}
                                             />
                                         </div>
