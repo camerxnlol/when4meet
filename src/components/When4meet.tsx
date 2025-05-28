@@ -1,11 +1,20 @@
 'use client'
 import React, { useState } from 'react';
 
-const when4meet = () => {
-    // Generate time slots (9 AM to 9 PM in 30-minute intervals)
+interface EventData {
+    name: string
+    dates: Date[]
+}
+
+interface When4meetProps {
+    eventData?: EventData
+}
+
+const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
+    // Generate time slots (9 AM to 12 AM in 30-minute intervals)
     const generateTimeSlots = () => {
-        const slots = [];
-        for (let hour = 9; hour <= 21; hour++) {
+        const slots: string[] = [];
+        for (let hour = 9; hour <= 23; hour++) {
             for (let minute = 0; minute < 60; minute += 30) {
                 const time = new Date();
                 time.setHours(hour, minute, 0, 0);
@@ -30,15 +39,15 @@ const when4meet = () => {
     const days = generateDays();
 
     // State to track availability - using a Set for selected 15-minute blocks
-    const [availability, setAvailability] = useState(new Set());
+    const [availability, setAvailability] = useState<Set<string>>(new Set());
     const [isDragging, setIsDragging] = useState(false);
-    const [dragMode, setDragMode] = useState(null); // 'select' or 'deselect'
+    const [dragMode, setDragMode] = useState<'select' | 'deselect' | null>(null);
 
     // Create unique key for each 15-minute block
-    const createSlotKey = (day, time, half) => `${day}-${time}-${half}`;
+    const createSlotKey = (day: string, time: string, half: string): string => `${day}-${time}-${half}`;
 
     // Handle mouse events for selecting/deselecting time slots
-    const handleMouseDown = (day, time, half) => {
+    const handleMouseDown = (day: string, time: string, half: string) => {
         if (half === 'both') {
             // Handle full 30-minute block
             const firstKey = createSlotKey(day, time, 'first');
@@ -75,7 +84,7 @@ const when4meet = () => {
         }
     };
 
-    const handleMouseEnter = (day, time, half) => {
+    const handleMouseEnter = (day: string, time: string, half: string) => {
         if (!isDragging) return;
 
         if (half === 'both') {
@@ -138,7 +147,7 @@ const when4meet = () => {
     };
 
     // Check if a 15-minute block is selected
-    const isBlockSelected = (day, time, half) => {
+    const isBlockSelected = (day: string, time: string, half: string): boolean => {
         return availability.has(createSlotKey(day, time, half));
     };
 
@@ -189,7 +198,7 @@ const when4meet = () => {
 
                         {/* Time slots grid */}
                         {timeSlots.map((time, timeIndex) => (
-                            <div key={time} className="flex border-b border-gray-700">
+                            <div key={`time-${timeIndex}-${time}`} className="flex border-b border-gray-700">
                                 {/* Time label */}
                                 <div className="w-16 flex-shrink-0 text-right pr-3 py-1 text-xs text-gray-400 font-mono flex items-center justify-end border-r border-gray-600">
                                     {time}
@@ -202,16 +211,16 @@ const when4meet = () => {
 
                                     return (
                                         <div
-                                            key={`${day}-${time}`}
+                                            key={`${day}-${timeIndex}-${time}`}
                                             className="flex-1 min-w-[80px] h-6 border-r border-gray-600"
                                         >
                                             {/* Single column that handles both 15-minute blocks */}
                                             <div
                                                 className={`w-full h-full cursor-pointer transition-all duration-150 ${firstHalf && secondHalf
-                                                        ? 'bg-emerald-500 hover:bg-emerald-400'
-                                                        : firstHalf || secondHalf
-                                                            ? 'bg-emerald-400 hover:bg-emerald-300'
-                                                            : 'bg-gray-800 hover:bg-gray-700'
+                                                    ? 'bg-emerald-500 hover:bg-emerald-400'
+                                                    : firstHalf || secondHalf
+                                                        ? 'bg-emerald-400 hover:bg-emerald-300'
+                                                        : 'bg-gray-800 hover:bg-gray-700'
                                                     }`}
                                                 onMouseDown={() => handleMouseDown(day, time, 'both')}
                                                 onMouseEnter={() => handleMouseEnter(day, time, 'both')}
@@ -236,4 +245,4 @@ const when4meet = () => {
     );
 };
 
-export default when4meet;
+export default When4meet;
