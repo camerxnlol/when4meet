@@ -10,9 +10,12 @@ interface When4meetProps {
     eventData: EventData
 }
 
+type AvailabilityType = 'available' | 'if-needed';
+
 const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
     const [currentPage, setCurrentPage] = useState(0);
     const daysPerPage = 7;
+    const [selectedType, setSelectedType] = useState<AvailabilityType>('available');
 
     // Generate time slots (9 AM to 12 AM in 30-minute intervals)
     const generateTimeSlots = () => {
@@ -50,6 +53,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
 
     // State to track availability - using a Set for selected 15-minute blocks
     const [availability, setAvailability] = useState<Set<string>>(new Set());
+    const [ifNeeded, setIfNeeded] = useState<Set<string>>(new Set());
     const [isDragging, setIsDragging] = useState(false);
     const [dragMode, setDragMode] = useState<'select' | 'deselect' | null>(null);
 
@@ -63,35 +67,47 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
             // Handle full 30-minute block
             const firstKey = createSlotKey(date, time, 'first');
             const secondKey = createSlotKey(date, time, 'second');
-            const bothSelected = availability.has(firstKey) && availability.has(secondKey);
+            const currentSet = selectedType === 'available' ? availability : ifNeeded;
+            const bothSelected = currentSet.has(firstKey) && currentSet.has(secondKey);
 
             setIsDragging(true);
             setDragMode(bothSelected ? 'deselect' : 'select');
 
-            const newAvailability = new Set(availability);
+            const newSet = new Set(currentSet);
             if (bothSelected) {
-                newAvailability.delete(firstKey);
-                newAvailability.delete(secondKey);
+                newSet.delete(firstKey);
+                newSet.delete(secondKey);
             } else {
-                newAvailability.add(firstKey);
-                newAvailability.add(secondKey);
+                newSet.add(firstKey);
+                newSet.add(secondKey);
             }
-            setAvailability(newAvailability);
+
+            if (selectedType === 'available') {
+                setAvailability(newSet);
+            } else {
+                setIfNeeded(newSet);
+            }
         } else {
             // Original logic for individual 15-minute blocks
             const key = createSlotKey(date, time, half);
-            const isSelected = availability.has(key);
+            const currentSet = selectedType === 'available' ? availability : ifNeeded;
+            const isSelected = currentSet.has(key);
 
             setIsDragging(true);
             setDragMode(isSelected ? 'deselect' : 'select');
 
-            const newAvailability = new Set(availability);
+            const newSet = new Set(currentSet);
             if (isSelected) {
-                newAvailability.delete(key);
+                newSet.delete(key);
             } else {
-                newAvailability.add(key);
+                newSet.add(key);
             }
-            setAvailability(newAvailability);
+
+            if (selectedType === 'available') {
+                setAvailability(newSet);
+            } else {
+                setIfNeeded(newSet);
+            }
         }
     };
 
@@ -102,27 +118,39 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
             // Handle full 30-minute block
             const firstKey = createSlotKey(date, time, 'first');
             const secondKey = createSlotKey(date, time, 'second');
-            const newAvailability = new Set(availability);
+            const currentSet = selectedType === 'available' ? availability : ifNeeded;
+            const newSet = new Set(currentSet);
 
             if (dragMode === 'select') {
-                newAvailability.add(firstKey);
-                newAvailability.add(secondKey);
+                newSet.add(firstKey);
+                newSet.add(secondKey);
             } else {
-                newAvailability.delete(firstKey);
-                newAvailability.delete(secondKey);
+                newSet.delete(firstKey);
+                newSet.delete(secondKey);
             }
-            setAvailability(newAvailability);
+
+            if (selectedType === 'available') {
+                setAvailability(newSet);
+            } else {
+                setIfNeeded(newSet);
+            }
         } else {
             // Original logic for individual 15-minute blocks
             const key = createSlotKey(date, time, half);
-            const newAvailability = new Set(availability);
+            const currentSet = selectedType === 'available' ? availability : ifNeeded;
+            const newSet = new Set(currentSet);
 
             if (dragMode === 'select') {
-                newAvailability.add(key);
+                newSet.add(key);
             } else {
-                newAvailability.delete(key);
+                newSet.delete(key);
             }
-            setAvailability(newAvailability);
+
+            if (selectedType === 'available') {
+                setAvailability(newSet);
+            } else {
+                setIfNeeded(newSet);
+            }
         }
     };
 
@@ -149,17 +177,24 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
 
     const handleSubmit = () => {
         const availabilityArray = Array.from(availability);
+        const ifNeededArray = Array.from(ifNeeded);
         console.log('Selected availability:', availabilityArray);
-        alert(`Selected ${availabilityArray.length} 15-minute blocks!`);
+        console.log('If needed:', ifNeededArray);
+        alert(`Selected ${availabilityArray.length} available blocks and ${ifNeededArray.length} if-needed blocks!`);
     };
 
     const clearAll = () => {
         setAvailability(new Set());
+        setIfNeeded(new Set());
     };
 
     // Check if a 15-minute block is selected
-    const isBlockSelected = (date: Date, time: string, half: string): boolean => {
-        return availability.has(createSlotKey(date, time, half));
+    const isBlockSelected = (date: Date, time: string, half: string): { available: boolean; ifNeeded: boolean } => {
+        const key = createSlotKey(date, time, half);
+        return {
+            available: availability.has(key),
+            ifNeeded: ifNeeded.has(key)
+        };
     };
 
     return (
@@ -173,6 +208,30 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                     <p className="text-gray-400 text-sm">
                         Select your availability • Click and drag to fill
                     </p>
+                </div>
+
+                {/* Availability Type Toggle */}
+                <div className="mb-8 flex justify-center">
+                    <div className="inline-flex rounded-md bg-gray-800 p-1">
+                        <button
+                            onClick={() => setSelectedType('available')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === 'available'
+                                ? 'bg-emerald-600 text-white'
+                                : 'text-gray-400 hover:text-white'
+                                }`}
+                        >
+                            Available
+                        </button>
+                        <button
+                            onClick={() => setSelectedType('if-needed')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === 'if-needed'
+                                ? 'bg-amber-500 text-white'
+                                : 'text-gray-400 hover:text-white'
+                                }`}
+                        >
+                            If Needed
+                        </button>
+                    </div>
                 </div>
 
                 {/* Action buttons */}
@@ -250,11 +309,15 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                                         >
                                             {/* Single column that handles both 15-minute blocks */}
                                             <div
-                                                className={`w-full h-full cursor-pointer transition-all duration-150 ${firstHalf && secondHalf
+                                                className={`w-full h-full cursor-pointer transition-all duration-150 ${firstHalf.available && secondHalf.available
                                                     ? 'bg-emerald-500 hover:bg-emerald-400'
-                                                    : firstHalf || secondHalf
-                                                        ? 'bg-emerald-400 hover:bg-emerald-300'
-                                                        : 'bg-gray-800 hover:bg-gray-700'
+                                                    : firstHalf.ifNeeded && secondHalf.ifNeeded
+                                                        ? 'bg-amber-500 hover:bg-amber-400'
+                                                        : firstHalf.available || secondHalf.available
+                                                            ? 'bg-emerald-400 hover:bg-emerald-300'
+                                                            : firstHalf.ifNeeded || secondHalf.ifNeeded
+                                                                ? 'bg-amber-400 hover:bg-amber-300'
+                                                                : 'bg-gray-800 hover:bg-gray-700'
                                                     }`}
                                                 onMouseDown={() => handleMouseDown(date, time, 'both')}
                                                 onMouseEnter={() => handleMouseEnter(date, time, 'both')}
@@ -271,7 +334,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                 {/* Footer info */}
                 <div className="mt-8 text-center">
                     <p className="text-gray-500 text-sm">
-                        {availability.size} blocks selected
+                        {availability.size} available blocks, {ifNeeded.size} if-needed blocks
                     </p>
                 </div>
             </div>
