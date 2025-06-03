@@ -41,7 +41,7 @@ CREATE TRIGGER on_availability_change
 CREATE TABLE public.weekly_availabilities (
     user_id INTEGER NOT NULL,
     start_day DATE NOT NULL,
-    availability BYTEA,
+    availability CHAR(336) NOT NULL,
     PRIMARY KEY (user_id, start_day),
     FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -52,8 +52,8 @@ CREATE TABLE public.events (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     location VARCHAR(255),
-    start_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    end_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    start_time TIMESTAMP WITHOUT TIME ZONE,
+    end_time TIMESTAMP WITHOUT TIME ZONE,
     CONSTRAINT chk_event_times CHECK (end_time >= start_time)
 );
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;

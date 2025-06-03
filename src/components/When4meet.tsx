@@ -1,5 +1,6 @@
 'use client'
 import React, { useState } from 'react';
+import { Availability } from '@/lib/availability';
 
 interface EventData {
     name: string
@@ -20,7 +21,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
     // Generate time slots (9 AM to 12 AM in 30-minute intervals)
     const generateTimeSlots = () => {
         const slots: string[] = [];
-        for (let hour = 9; hour <= 23; hour++) {
+        for (let hour = 0; hour <= 23; hour++) {
             for (let minute = 0; minute < 60; minute += 30) {
                 const time = new Date();
                 time.setHours(hour, minute, 0, 0);
@@ -51,13 +52,13 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
         (currentPage + 1) * daysPerPage
     );
 
-    // State to track availability - using a Set for selected 15-minute blocks
+    // State to track availability - using a Set for selected 30-minute blocks
     const [availability, setAvailability] = useState<Set<string>>(new Set());
     const [ifNeeded, setIfNeeded] = useState<Set<string>>(new Set());
     const [isDragging, setIsDragging] = useState(false);
     const [dragMode, setDragMode] = useState<'select' | 'deselect' | null>(null);
 
-    // Create unique key for each 15-minute block
+    // Create unique key for each 30-minute block
     const createSlotKey = (date: Date, time: string, half: string): string =>
         `${date.toISOString()}-${time}-${half}`;
 
@@ -88,7 +89,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                 setIfNeeded(newSet);
             }
         } else {
-            // Original logic for individual 15-minute blocks
+            // Original logic for individual 30-minute blocks
             const key = createSlotKey(date, time, half);
             const currentSet = selectedType === 'available' ? availability : ifNeeded;
             const isSelected = currentSet.has(key);
@@ -135,7 +136,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                 setIfNeeded(newSet);
             }
         } else {
-            // Original logic for individual 15-minute blocks
+            // Original logic for individual 30-minute blocks
             const key = createSlotKey(date, time, half);
             const currentSet = selectedType === 'available' ? availability : ifNeeded;
             const newSet = new Set(currentSet);
@@ -188,7 +189,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
         setIfNeeded(new Set());
     };
 
-    // Check if a 15-minute block is selected
+    // Check if a 30-minute block is selected
     const isBlockSelected = (date: Date, time: string, half: string): { available: boolean; ifNeeded: boolean } => {
         const key = createSlotKey(date, time, half);
         return {
@@ -260,7 +261,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
                                                     key={`${date.toISOString()}-${timeIndex}-${time}`}
                                                     className="flex-1 min-w-[80px] h-6 border-r border-gray-600"
                                                 >
-                                                    {/* Single column that handles both 15-minute blocks */}
+                                                    {/* Single column that handles both 30-minute blocks */}
                                                     <div
                                                         className={`w-full h-full cursor-pointer transition-all duration-150 ${firstHalf.available && secondHalf.available
                                                             ? 'bg-emerald-500 hover:bg-emerald-400'
