@@ -127,20 +127,14 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
       setAvailability(newAvailability);
       setIfNeeded(newIfNeeded);
     } else {
-      // For deselect, just remove from current set
-      const currentSet =
-        selectedType === Availability.Available ? availability : ifNeeded;
-      const newSet = new Set(currentSet);
-      keys.forEach((key) => newSet.delete(key));
-      setFinalAvailability(newSet);
-    }
-  };
+      // For deselect, remove from both sets
+      const newAvail = new Set(availability);
+      keys.forEach((key) => newAvail.delete(key));
+      setAvailability(newAvail);
 
-  const setFinalAvailability = (newSet: Set<string>) => {
-    if (selectedType === Availability.Available) {
-      setAvailability(newSet);
-    } else {
-      setIfNeeded(newSet);
+      const newIfNeeded = new Set(ifNeeded);
+      keys.forEach((key) => newIfNeeded.delete(key));
+      setIfNeeded(newIfNeeded);
     }
   };
 
