@@ -1,28 +1,28 @@
-'use client'
-import React from 'react'
-import { useState } from 'react'
-import EventCreator from '@/components/EventCreator'
-import When4meet from '@/components/When4meet'
+'use client';
+import React from 'react';
+import { useState } from 'react';
+import EventCreator from '@/components/EventCreator';
+import When4meet from '@/components/When4meet';
 
 interface EventData {
-  name: string
-  dates: Date[]
+  name: string;
+  dates: Date[];
 }
 
 export default function Home() {
-  const [currentEvent, setCurrentEvent] = useState<EventData | null>(null)
+  const [currentEvent, setCurrentEvent] = useState<EventData | null>(null);
 
   const handleEventCreated = (eventData: EventData) => {
-    setCurrentEvent(eventData)
-    console.log('Event created:', eventData)
-  }
+    setCurrentEvent(eventData);
+    console.log('Event created:', eventData);
+  };
 
   const handleBackToEventCreation = () => {
-    setCurrentEvent(null)
-  }
+    setCurrentEvent(null);
+  };
 
   if (!currentEvent) {
-    return <EventCreator onEventCreated={handleEventCreated} />
+    return <EventCreator onEventCreated={handleEventCreated} />;
   }
 
   return (
@@ -37,5 +37,5 @@ export default function Home() {
       </div>
       <When4meet eventData={currentEvent} />
     </div>
-  )
+  );
 }
