@@ -26,6 +26,16 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   ifNeeded,
   setIfNeeded,
 }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragState, setDragState] = useState<DragState>({
+    startDate: null,
+    startTime: null,
+    currentDate: null,
+    currentTime: null,
+    mode: null,
+  });
+  const [previewKeys, setPreviewKeys] = useState<Set<string>>(new Set());
+
   // Generate time slots for 30-minute time intervals
   const generateTimeSlots = () => {
     const slots: string[] = [];
@@ -57,18 +67,6 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
 
   const timeSlots = generateTimeSlots();
 
-  // State to track availability - using a Set for selected 30-minute blocks
-  const [isDragging, setIsDragging] = useState(false);
-
-  const [dragState, setDragState] = useState<DragState>({
-    startDate: null,
-    startTime: null,
-    currentDate: null,
-    currentTime: null,
-    mode: null,
-  });
-  const [previewKeys, setPreviewKeys] = useState<Set<string>>(new Set());
-
   const getTimeIndex = (time: string) => timeSlots.indexOf(time);
   const getDateIndex = (date: Date) =>
     currentDates.findIndex((d) => d.toISOString() === date.toISOString());
@@ -94,16 +92,15 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
       for (let timeIdx = minTimeIdx; timeIdx <= maxTimeIdx; timeIdx++) {
         const date = currentDates[dateIdx];
         const time = timeSlots[timeIdx];
-        keys.push(createSlotKey(date, time, 'first'));
-        keys.push(createSlotKey(date, time, 'second'));
+        keys.push(createSlotKey(date, time));
       }
     }
     return keys;
   };
 
   // Create unique key for each 30-minute block
-  const createSlotKey = (date: Date, time: string, half: string): string =>
-    `${date.toISOString()}-${time}-${half}`;
+  const createSlotKey = (date: Date, time: string): string =>
+    `${date.toISOString()}-${time}`;
 
   const updateAvailabilitySet = (
     keys: string[],
@@ -150,11 +147,8 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   const handleMouseDown = (date: Date, time: string) => {
     const currentSet =
       selectedType === Availability.Available ? availability : ifNeeded;
-    const keys = [
-      createSlotKey(date, time, 'first'),
-      createSlotKey(date, time, 'second'),
-    ];
-    const isSelected = keys.every((key) => currentSet.has(key));
+    const key = createSlotKey(date, time);
+    const isSelected = currentSet.has(key);
 
     setIsDragging(true);
     setDragState({
@@ -207,12 +201,8 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   };
 
   // In your GridCells component, add a preview class:
-  const isInPreview = (date: Date, time: string) => {
-    return (
-      previewKeys.has(createSlotKey(date, time, 'first')) ||
-      previewKeys.has(createSlotKey(date, time, 'second'))
-    );
-  };
+  const isInPreview = (date: Date, time: string) =>
+    previewKeys.has(createSlotKey(date, time));
   // Don't forget to add the mouseup event listener
   useEffect(() => {
     if (isDragging) {
@@ -230,8 +220,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   });
 
   const getCellColor = (
-    firstHalf: { available: boolean; ifNeeded: boolean },
-    secondHalf: { available: boolean; ifNeeded: boolean },
+    selection: { available: boolean; ifNeeded: boolean },
     isPreview: boolean,
     selectedType: Availability,
     dragMode: 'select' | 'deselect' | null
@@ -245,23 +234,12 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
       }
       return 'bg-amber-500 opacity-75';
     }
-
-    if (firstHalf.available && secondHalf.available) {
+    if (selection.available) {
       return 'bg-emerald-500 hover:bg-emerald-400';
     }
-
-    if (firstHalf.ifNeeded && secondHalf.ifNeeded) {
+    if (selection.ifNeeded) {
       return 'bg-amber-500 hover:bg-amber-400';
     }
-
-    if (firstHalf.available || secondHalf.available) {
-      return 'bg-emerald-400 hover:bg-emerald-300';
-    }
-
-    if (firstHalf.ifNeeded || secondHalf.ifNeeded) {
-      return 'bg-amber-400 hover:bg-amber-300';
-    }
-
     return 'bg-gray-800 hover:bg-gray-700';
   };
 
@@ -269,9 +247,8 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   const isBlockSelected = (
     date: Date,
     time: string,
-    half: string
   ): { available: boolean; ifNeeded: boolean } => {
-    const key = createSlotKey(date, time, half);
+    const key = createSlotKey(date, time);
     return {
       available: availability.has(key),
       ifNeeded: ifNeeded.has(key),
@@ -308,8 +285,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
 
             {/* Availability cells for each date */}
             {currentDates.map((date) => {
-              const firstHalf = isBlockSelected(date, time, 'first');
-              const secondHalf = isBlockSelected(date, time, 'second');
+              const selection = isBlockSelected(date, time);
 
               return (
                 <div
@@ -318,8 +294,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
                 >
                   <div
                     className={`w-full h-full cursor-pointer transition-all duration-150 ${getCellColor(
-                      firstHalf,
-                      secondHalf,
+                      selection,
                       isInPreview(date, time),
                       selectedType,
                       dragState.mode
