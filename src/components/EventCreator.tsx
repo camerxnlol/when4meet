@@ -1,13 +1,13 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 
 interface EventData {
-  name: string
-  dates: Date[]
+  name: string;
+  dates: Date[];
 }
 
 interface EventCreatorProps {
-  onEventCreated: (eventData: EventData) => void
+  onEventCreated: (eventData: EventData) => void;
 }
 
 const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
@@ -19,7 +19,10 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
   const getCurrentMonthInfo = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const monthName = currentDate.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    });
 
     // Get first day of month and how many days
     const firstDay = new Date(year, month, 1);
@@ -32,11 +35,15 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
 
   // Navigate months
   const goToPreviousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+    );
   };
 
   const goToNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+    );
   };
 
   // Handle date selection
@@ -61,7 +68,11 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
   // Check if date is in the past
   const isDateInPast = (day: number) => {
     const today = new Date();
-    const checkDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const checkDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
     today.setHours(0, 0, 0, 0);
     checkDate.setHours(0, 0, 0, 0);
     return checkDate < today;
@@ -71,20 +82,22 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
   const getSelectedDatesText = () => {
     if (selectedDates.size === 0) return 'No dates selected';
 
-    const dates = Array.from(selectedDates).map((dateKey: string) => {
-      const [year, month, day] = dateKey.split('-').map(Number);
-      const date = new Date(year, month, day);
-      return {
-        date,
-        formatted: date.toLocaleDateString('en-US', {
-          weekday: 'short',
-          month: 'short',
-          day: 'numeric'
-        })
-      };
-    }).sort((a, b) => a.date.getTime() - b.date.getTime());
+    const dates = Array.from(selectedDates)
+      .map((dateKey: string) => {
+        const [year, month, day] = dateKey.split('-').map(Number);
+        const date = new Date(year, month, day);
+        return {
+          date,
+          formatted: date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          }),
+        };
+      })
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    return dates.map(d => d.formatted).join(', ');
+    return dates.map((d) => d.formatted).join(', ');
   };
 
   // Handle form submission
@@ -100,14 +113,16 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
     }
 
     // Convert selected dates to a more usable format
-    const eventDates = Array.from(selectedDates).map((dateKey: string) => {
-      const [year, month, day] = dateKey.split('-').map(Number);
-      return new Date(year, month, day);
-    }).sort((a: Date, b: Date) => a.getTime() - b.getTime());
+    const eventDates = Array.from(selectedDates)
+      .map((dateKey: string) => {
+        const [year, month, day] = dateKey.split('-').map(Number);
+        return new Date(year, month, day);
+      })
+      .sort((a: Date, b: Date) => a.getTime() - b.getTime());
 
     const eventData = {
       name: eventName,
-      dates: eventDates
+      dates: eventDates,
     };
 
     onEventCreated(eventData);
@@ -137,9 +152,7 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
           <h1 className="text-4xl font-light tracking-wide text-white mb-2">
             when4meet
           </h1>
-          <p className="text-gray-400 text-sm">
-            Create a new scheduling event
-          </p>
+          <p className="text-gray-400 text-sm">Create a new scheduling event</p>
         </div>
 
         <div className="bg-gray-800 rounded-lg p-8 shadow-2xl">
@@ -171,9 +184,7 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
               >
                 ←
               </button>
-              <h3 className="text-lg font-medium text-white">
-                {monthName}
-              </h3>
+              <h3 className="text-lg font-medium text-white">{monthName}</h3>
               <button
                 onClick={goToNextMonth}
                 className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
@@ -184,8 +195,11 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
 
             {/* Days of week header */}
             <div className="grid grid-cols-7 gap-1 mb-2">
-              {daysOfWeek.map(day => (
-                <div key={day} className="text-center text-xs font-medium text-gray-400 py-2">
+              {daysOfWeek.map((day) => (
+                <div
+                  key={day}
+                  className="text-center text-xs font-medium text-gray-400 py-2"
+                >
                   {day}
                 </div>
               ))}
@@ -207,12 +221,13 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
                     key={dateKey}
                     onClick={() => !isPast && toggleDate(day)}
                     disabled={isPast}
-                    className={`h-10 rounded-md text-sm font-medium transition-all duration-200 ${isPast
-                      ? 'text-gray-600 cursor-not-allowed'
-                      : isSelected
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                        : 'text-gray-300 hover:bg-gray-700'
-                      }`}
+                    className={`h-10 rounded-md text-sm font-medium transition-all duration-200 ${
+                      isPast
+                        ? 'text-gray-600 cursor-not-allowed'
+                        : isSelected
+                          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                          : 'text-gray-300 hover:bg-gray-700'
+                    }`}
                   >
                     {day}
                   </button>
@@ -224,9 +239,7 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
           {/* Selected dates display */}
           <div className="mb-8 p-4 bg-gray-700 rounded-md">
             <p className="text-sm text-gray-300 mb-2">Selected dates:</p>
-            <p className="text-sm text-emerald-400">
-              {getSelectedDatesText()}
-            </p>
+            <p className="text-sm text-emerald-400">{getSelectedDatesText()}</p>
           </div>
 
           {/* Action buttons */}

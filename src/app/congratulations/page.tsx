@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { dbClient } from '@/lib/db';
 
 export default function CongratulationsPage() {
-  const [loading, setLoading] = useState<string | null>(null)
+  const [loading, setLoading] = useState<string | null>(null);
 
   const buttons = [
     'getUsers',
@@ -28,7 +28,7 @@ export default function CongratulationsPage() {
     } finally {
       setLoading(null);
     }
-  }
+  };
 
   return (
     <main className="p-8 max-w-2xl mx-auto">
