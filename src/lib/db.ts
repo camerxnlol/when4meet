@@ -37,13 +37,11 @@ class DbClient {
     avails: Availability[]
   ) {
     const avail_string = encodeAvailabilityList(avails);
-    const { error } = await this.client
-      .from('weekly_availabilities')
-      .upsert({
-        availability: avail_string,
-        start_day: start_day,
-        user_id: user_id,
-      });
+    const { error } = await this.client.from('weekly_availabilities').upsert({
+      availability: avail_string,
+      start_day: start_day,
+      user_id: user_id,
+    });
     if (error) throw error;
   }
 
