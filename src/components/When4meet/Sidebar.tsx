@@ -1,11 +1,10 @@
+import { Availability, AvailabilitySelection } from '@/lib/availability';
 import React from 'react';
-
-type AvailabilityType = 'available' | 'if-needed';
 
 interface SidebarProps {
   eventName: string;
-  selectedType: AvailabilityType;
-  setSelectedType: (type: AvailabilityType) => void;
+  selectedType: AvailabilitySelection;
+  setSelectedType: (type: AvailabilitySelection) => void;
   handleSubmit: () => void;
   clearAll: () => void;
 }
@@ -32,9 +31,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <div className="mb-8">
       <div className="inline-flex rounded-md bg-gray-800 p-1 w-full">
         <button
-          onClick={() => setSelectedType('available')}
+          onClick={() => setSelectedType(Availability.Available)}
           className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-            selectedType === 'available'
+            selectedType === Availability.Available
               ? 'bg-emerald-600 text-white'
               : 'text-gray-400 hover:text-white'
           }`}
@@ -42,9 +41,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           Available
         </button>
         <button
-          onClick={() => setSelectedType('if-needed')}
+          onClick={() => setSelectedType(Availability.IfNeeded)}
           className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-            selectedType === 'if-needed'
+            selectedType === Availability.IfNeeded
               ? 'bg-amber-500 text-white'
               : 'text-gray-400 hover:text-white'
           }`}

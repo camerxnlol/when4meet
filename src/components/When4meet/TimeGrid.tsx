@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import { Availability, AvailabilitySelection } from '@/lib/availability';
+import React, { useState, useEffect } from 'react';
 
 interface TimeGridProps {
   currentDates: Date[];
-  selectedType: AvailabilityType;
+  selectedType: AvailabilitySelection;
   availability: Set<string>;
   setAvailability: (type: Set<string>) => void;
   ifNeeded: Set<string>;
   setIfNeeded: (type: Set<string>) => void;
 }
 
-type AvailabilityType = 'available' | 'if-needed';
+interface DragState {
+  startDate: Date | null;
+  startTime: string | null;
+  currentDate: Date | null;
+  currentTime: string | null;
+  mode: 'select' | 'deselect' | null;
+}
 
 export const TimeGrid: React.FC<TimeGridProps> = ({
   currentDates,
@@ -20,8 +27,6 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   setIfNeeded,
 }) => {
   // Generate time slots for 30-minute time intervals
-
-  // Generate time slots (9 AM to 12 AM in 30-minute intervals)
   const generateTimeSlots = () => {
     const slots: string[] = [];
     for (let hour = 0; hour <= 23; hour++) {
@@ -54,113 +59,162 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
 
   // State to track availability - using a Set for selected 30-minute blocks
   const [isDragging, setIsDragging] = useState(false);
-  const [dragMode, setDragMode] = useState<'select' | 'deselect' | null>(null);
+
+  const [dragState, setDragState] = useState<DragState>({
+    startDate: null,
+    startTime: null,
+    currentDate: null,
+    currentTime: null,
+    mode: null,
+  });
+  const [previewKeys, setPreviewKeys] = useState<Set<string>>(new Set());
+
+  const getTimeIndex = (time: string) => timeSlots.indexOf(time);
+  const getDateIndex = (date: Date) =>
+    currentDates.findIndex((d) => d.toISOString() === date.toISOString());
+
+  const getRectangleKeys = (
+    startDate: Date,
+    startTime: string,
+    endDate: Date,
+    endTime: string
+  ) => {
+    const startDateIdx = getDateIndex(startDate);
+    const endDateIdx = getDateIndex(endDate);
+    const startTimeIdx = getTimeIndex(startTime);
+    const endTimeIdx = getTimeIndex(endTime);
+
+    const minDateIdx = Math.min(startDateIdx, endDateIdx);
+    const maxDateIdx = Math.max(startDateIdx, endDateIdx);
+    const minTimeIdx = Math.min(startTimeIdx, endTimeIdx);
+    const maxTimeIdx = Math.max(startTimeIdx, endTimeIdx);
+
+    const keys: string[] = [];
+    for (let dateIdx = minDateIdx; dateIdx <= maxDateIdx; dateIdx++) {
+      for (let timeIdx = minTimeIdx; timeIdx <= maxTimeIdx; timeIdx++) {
+        const date = currentDates[dateIdx];
+        const time = timeSlots[timeIdx];
+        keys.push(createSlotKey(date, time, 'first'));
+        keys.push(createSlotKey(date, time, 'second'));
+      }
+    }
+    return keys;
+  };
 
   // Create unique key for each 30-minute block
   const createSlotKey = (date: Date, time: string, half: string): string =>
     `${date.toISOString()}-${time}-${half}`;
 
-  // Handle mouse events for selecting/deselecting time slots
-  const handleMouseDown = (date: Date, time: string, half: string) => {
-    if (half === 'both') {
-      // Handle full 30-minute block
-      const firstKey = createSlotKey(date, time, 'first');
-      const secondKey = createSlotKey(date, time, 'second');
-      const currentSet = selectedType === 'available' ? availability : ifNeeded;
-      const bothSelected =
-        currentSet.has(firstKey) && currentSet.has(secondKey);
+  const updateAvailabilitySet = (
+    keys: string[],
+    action: 'select' | 'deselect'
+  ) => {
+    // Clear keys from both sets when selecting
+    if (action === 'select') {
+      const newAvailability = new Set(availability);
+      const newIfNeeded = new Set(ifNeeded);
+      keys.forEach((key) => {
+        newAvailability.delete(key);
+        newIfNeeded.delete(key);
+      });
 
-      setIsDragging(true);
-      setDragMode(bothSelected ? 'deselect' : 'select');
+      // Add to the appropriate set
+      keys.forEach((key) => {
+        if (selectedType === Availability.Available) {
+          newAvailability.add(key);
+        } else {
+          newIfNeeded.add(key);
+        }
+      });
 
-      const newSet = new Set(currentSet);
-      if (bothSelected) {
-        newSet.delete(firstKey);
-        newSet.delete(secondKey);
-      } else {
-        newSet.add(firstKey);
-        newSet.add(secondKey);
-      }
-
-      if (selectedType === 'available') {
-        setAvailability(newSet);
-      } else {
-        setIfNeeded(newSet);
-      }
+      setAvailability(newAvailability);
+      setIfNeeded(newIfNeeded);
     } else {
-      // Original logic for individual 30-minute blocks
-      const key = createSlotKey(date, time, half);
-      const currentSet = selectedType === 'available' ? availability : ifNeeded;
-      const isSelected = currentSet.has(key);
-
-      setIsDragging(true);
-      setDragMode(isSelected ? 'deselect' : 'select');
-
+      // For deselect, just remove from current set
+      const currentSet =
+        selectedType === Availability.Available ? availability : ifNeeded;
       const newSet = new Set(currentSet);
-      if (isSelected) {
-        newSet.delete(key);
-      } else {
-        newSet.add(key);
-      }
-
-      if (selectedType === 'available') {
-        setAvailability(newSet);
-      } else {
-        setIfNeeded(newSet);
-      }
+      keys.forEach((key) => newSet.delete(key));
+      setFinalAvailability(newSet);
     }
   };
 
-  const handleMouseEnter = (date: Date, time: string, half: string) => {
-    if (!isDragging) return;
-
-    if (half === 'both') {
-      // Handle full 30-minute block
-      const firstKey = createSlotKey(date, time, 'first');
-      const secondKey = createSlotKey(date, time, 'second');
-      const currentSet = selectedType === 'available' ? availability : ifNeeded;
-      const newSet = new Set(currentSet);
-
-      if (dragMode === 'select') {
-        newSet.add(firstKey);
-        newSet.add(secondKey);
-      } else {
-        newSet.delete(firstKey);
-        newSet.delete(secondKey);
-      }
-
-      if (selectedType === 'available') {
-        setAvailability(newSet);
-      } else {
-        setIfNeeded(newSet);
-      }
+  const setFinalAvailability = (newSet: Set<string>) => {
+    if (selectedType === Availability.Available) {
+      setAvailability(newSet);
     } else {
-      // Original logic for individual 30-minute blocks
-      const key = createSlotKey(date, time, half);
-      const currentSet = selectedType === 'available' ? availability : ifNeeded;
-      const newSet = new Set(currentSet);
-
-      if (dragMode === 'select') {
-        newSet.add(key);
-      } else {
-        newSet.delete(key);
-      }
-
-      if (selectedType === 'available') {
-        setAvailability(newSet);
-      } else {
-        setIfNeeded(newSet);
-      }
+      setIfNeeded(newSet);
     }
+  };
+
+  const handleMouseDown = (date: Date, time: string) => {
+    const currentSet =
+      selectedType === Availability.Available ? availability : ifNeeded;
+    const keys = [
+      createSlotKey(date, time, 'first'),
+      createSlotKey(date, time, 'second'),
+    ];
+    const isSelected = keys.every((key) => currentSet.has(key));
+
+    setIsDragging(true);
+    setDragState({
+      startDate: date,
+      startTime: time,
+      currentDate: date,
+      currentTime: time,
+      mode: isSelected ? 'deselect' : 'select',
+    });
+  };
+
+  const handleMouseEnter = (date: Date, time: string) => {
+    if (!dragState.startDate || !dragState.startTime || !dragState.mode) return;
+
+    setDragState((prev) => ({
+      ...prev,
+      currentDate: date,
+      currentTime: time,
+    }));
+
+    const keys = getRectangleKeys(
+      dragState.startDate,
+      dragState.startTime,
+      date,
+      time
+    );
+    setPreviewKeys(new Set(keys));
   };
 
   const handleMouseUp = () => {
+    if (dragState.startDate && dragState.currentDate && dragState.mode) {
+      const keys = getRectangleKeys(
+        dragState.startDate,
+        dragState.startTime!,
+        dragState.currentDate,
+        dragState.currentTime!
+      );
+      updateAvailabilitySet(keys, dragState.mode);
+    }
+
     setIsDragging(false);
-    setDragMode(null);
+    setDragState({
+      startDate: null,
+      startTime: null,
+      currentDate: null,
+      currentTime: null,
+      mode: null,
+    });
+    setPreviewKeys(new Set());
   };
 
-  // Prevent text selection while dragging
-  React.useEffect(() => {
+  // In your GridCells component, add a preview class:
+  const isInPreview = (date: Date, time: string) => {
+    return (
+      previewKeys.has(createSlotKey(date, time, 'first')) ||
+      previewKeys.has(createSlotKey(date, time, 'second'))
+    );
+  };
+  // Don't forget to add the mouseup event listener
+  useEffect(() => {
     if (isDragging) {
       document.body.style.userSelect = 'none';
       document.addEventListener('mouseup', handleMouseUp);
@@ -173,7 +227,43 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
       document.body.style.userSelect = '';
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging]);
+  });
+
+  const getCellColor = (
+    firstHalf: { available: boolean; ifNeeded: boolean },
+    secondHalf: { available: boolean; ifNeeded: boolean },
+    isPreview: boolean,
+    selectedType: Availability,
+    dragMode: 'select' | 'deselect' | null
+  ) => {
+    if (isPreview) {
+      if (dragMode === 'deselect') {
+        return 'bg-gray-700 opacity-75';
+      }
+      if (selectedType === Availability.Available) {
+        return 'bg-emerald-500 opacity-75';
+      }
+      return 'bg-amber-500 opacity-75';
+    }
+
+    if (firstHalf.available && secondHalf.available) {
+      return 'bg-emerald-500 hover:bg-emerald-400';
+    }
+
+    if (firstHalf.ifNeeded && secondHalf.ifNeeded) {
+      return 'bg-amber-500 hover:bg-amber-400';
+    }
+
+    if (firstHalf.available || secondHalf.available) {
+      return 'bg-emerald-400 hover:bg-emerald-300';
+    }
+
+    if (firstHalf.ifNeeded || secondHalf.ifNeeded) {
+      return 'bg-amber-400 hover:bg-amber-300';
+    }
+
+    return 'bg-gray-800 hover:bg-gray-700';
+  };
 
   // Check if a 30-minute block is selected
   const isBlockSelected = (
@@ -226,21 +316,16 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
                   key={`${date.toISOString()}-${timeIndex}-${time}`}
                   className="flex-1 min-w-[80px] h-6 border-r border-gray-600"
                 >
-                  {/* Single column that handles both 30-minute blocks */}
                   <div
-                    className={`w-full h-full cursor-pointer transition-all duration-150 ${
-                      firstHalf.available && secondHalf.available
-                        ? 'bg-emerald-500 hover:bg-emerald-400'
-                        : firstHalf.ifNeeded && secondHalf.ifNeeded
-                          ? 'bg-amber-500 hover:bg-amber-400'
-                          : firstHalf.available || secondHalf.available
-                            ? 'bg-emerald-400 hover:bg-emerald-300'
-                            : firstHalf.ifNeeded || secondHalf.ifNeeded
-                              ? 'bg-amber-400 hover:bg-amber-300'
-                              : 'bg-gray-800 hover:bg-gray-700'
-                    }`}
-                    onMouseDown={() => handleMouseDown(date, time, 'both')}
-                    onMouseEnter={() => handleMouseEnter(date, time, 'both')}
+                    className={`w-full h-full cursor-pointer transition-all duration-150 ${getCellColor(
+                      firstHalf,
+                      secondHalf,
+                      isInPreview(date, time),
+                      selectedType,
+                      dragState.mode
+                    )}`}
+                    onMouseDown={() => handleMouseDown(date, time)}
+                    onMouseEnter={() => handleMouseEnter(date, time)}
                     onDragStart={(e) => e.preventDefault()}
                   />
                 </div>

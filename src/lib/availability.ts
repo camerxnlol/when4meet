@@ -4,6 +4,11 @@ export const enum Availability {
   IfNeeded = '2',
 }
 
+export type AvailabilitySelection = Exclude<
+  Availability,
+  Availability.Unavailable
+>;
+
 // this is apparently necessary and i hate it
 const allAvailabilityValues: Availability[] = [
   Availability.Unavailable,
@@ -16,7 +21,10 @@ export const encodeAvailabilityList = (a: Availability[]): string => {
 };
 
 export const decodeAvailability = (c: string): Availability => {
-  console.assert(c.length == 1, 'invalid argument');
+  console.assert(
+    c.length === 1,
+    `invalid argument "${c}" to decodeAvailability`
+  );
   for (const avail of allAvailabilityValues) {
     if (c === avail) {
       return avail;

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { TimeGrid } from './TimeGrid';
 import { Pagination } from './Pagination';
 import { Sidebar } from './Sidebar';
+import { Availability, AvailabilitySelection } from '@/lib/availability';
 
 interface EventData {
   name: string;
@@ -13,13 +14,12 @@ interface When4meetProps {
   eventData: EventData;
 }
 
-type AvailabilityType = 'available' | 'if-needed';
-
 const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const daysPerPage = 7;
-  const [selectedType, setSelectedType] =
-    useState<AvailabilityType>('available');
+  const [selectedType, setSelectedType] = useState<AvailabilitySelection>(
+    Availability.Available
+  );
 
   const totalPages = Math.ceil(eventData.dates.length / daysPerPage);
   const currentDates = eventData.dates.slice(
