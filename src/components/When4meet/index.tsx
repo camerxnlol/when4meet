@@ -47,7 +47,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white pt-16">
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex gap-8">
           <div className="flex-1">
@@ -80,6 +80,8 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
             setSelectedType={setSelectedType}
             handleSubmit={handleSubmit}
             clearAll={clearAll}
+            currentPage={currentPage}
+            totalPages={totalPages}
           />
         </div>
       </div>

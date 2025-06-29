@@ -145,16 +145,8 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6 pt-24">
       <div className="max-w-2xl w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-light tracking-wide text-white mb-2">
-            when4meet
-          </h1>
-          <p className="text-gray-400 text-sm">Create a new scheduling event</p>
-        </div>
-
         <div className="bg-gray-800 rounded-lg p-8 shadow-2xl">
           {/* Event Name Input */}
           <div className="mb-8">
@@ -221,13 +213,12 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
                     key={dateKey}
                     onClick={() => !isPast && toggleDate(day)}
                     disabled={isPast}
-                    className={`h-10 rounded-md text-sm font-medium transition-all duration-200 ${
-                      isPast
-                        ? 'text-gray-600 cursor-not-allowed'
-                        : isSelected
-                          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                          : 'text-gray-300 hover:bg-gray-700'
-                    }`}
+                    className={`h-10 rounded-md text-sm font-medium transition-all duration-200 ${isPast
+                      ? 'text-gray-600 cursor-not-allowed'
+                      : isSelected
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        : 'text-gray-300 hover:bg-gray-700'
+                      }`}
                   >
                     {day}
                   </button>
