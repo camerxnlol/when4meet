@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { useAvailability } from '../../context/AvailabilityContext'
 import { TimeGrid } from './TimeGrid';
 import { Pagination } from './Pagination';
 import { Sidebar } from './Sidebar';
@@ -31,6 +32,9 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
   const [availability, setAvailability] = useState<Set<string>>(new Set());
   const [ifNeeded, setIfNeeded] = useState<Set<string>>(new Set());
 
+  // Store availability info for future use
+  const { setAvailabilityData } = useAvailability();
+
   const handleSubmit = () => {
     const availabilityArray = Array.from(availability);
     const ifNeededArray = Array.from(ifNeeded);
@@ -41,13 +45,16 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
       alert(`Please Enter Your Kerb`);
       return;
     }
+    
+    const newAvailabilityData = {
+      kerb: kerb,
+      availabilityArray: availabilityArray,
+      ifNeededArray: ifNeededArray,
+    }
 
-    console.log('Selected availability:', availabilityArray);
-    console.log('If needed:', ifNeededArray);
-    console.log('Kerb:', kerb);
-    alert(
-      `Selected ${availabilityArray.length} available blocks and ${ifNeededArray.length} if-needed blocks!`
-    );
+    console.log(newAvailabilityData);
+
+    setAvailabilityData(newAvailabilityData);
   };
 
   const clearAll = () => {
