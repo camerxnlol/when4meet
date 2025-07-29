@@ -34,8 +34,17 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
   const handleSubmit = () => {
     const availabilityArray = Array.from(availability);
     const ifNeededArray = Array.from(ifNeeded);
+    const input = document.getElementById("kerbInput") as HTMLInputElement;
+    const kerb = input.value
+    
+    if (kerb.length == 0) {
+      alert(`Please Enter Your Kerb`);
+      return;
+    }
+
     console.log('Selected availability:', availabilityArray);
     console.log('If needed:', ifNeededArray);
+    console.log('Kerb:', kerb);
     alert(
       `Selected ${availabilityArray.length} available blocks and ${ifNeededArray.length} if-needed blocks!`
     );

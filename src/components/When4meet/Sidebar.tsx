@@ -76,6 +76,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
+      {/* Kerb field */}
+      <div className="pb-3 flex flex-col gap-3">
+        <input type="text" placeholder="enter your kerb" id="kerbInput"
+        className="w-full px-6 py-2 text-white rounded-md transition-all duration-200 text-sm font-medium text-gray-700">
+        </input>
+      </div>
+
       {/* Action buttons */}
       <div className="flex flex-col gap-3">
         <button
