@@ -1,5 +1,7 @@
 import { Availability, AvailabilitySelection } from '@/lib/availability';
 import React from 'react';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
 
 interface SidebarProps {
   eventName: string;
@@ -52,35 +54,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
+      {/* Kerb + Name fields */}
+      <div className="flex flex-col gap-3">
+        <div className="w-full flex-wrap bg-gray-700 rounded-md gap-4 transition-all duration-200 text-sm font-medium">
+          <Input isClearable
+                 isRequired
+                 label="Kerb"
+                 placeholder="Enter your Kerb"
+                 type="string"
+                 id="kerbInput"/>
+        </div>
+        <div className="w-full flex-wrap bg-gray-700 rounded-md gap-4 transition-all duration-200 text-sm font-medium">
+          <Input isClearable
+                 isRequired
+                 label="Name"
+                 placeholder="Enter your Name"
+                 type="string"
+                 id="nameInput"/>
+        </div>
+      </div>
+
       {/* Availability Type Toggle */}
-      <div className="mb-8">
+      <div className="mt-5 py-3">
         <div className="inline-flex rounded-md bg-gray-800 p-1 w-full">
-          <button
-            onClick={() => setSelectedType(Availability.Available)}
+          <Button
+            onPress={() => setSelectedType(Availability.Available)}
             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === Availability.Available
               ? 'bg-emerald-600 text-white'
               : 'text-gray-400 hover:text-white'
               }`}
           >
             Available
-          </button>
-          <button
-            onClick={() => setSelectedType(Availability.IfNeeded)}
+          </Button>
+          <Button
+            onPress={() => setSelectedType(Availability.IfNeeded)}
             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === Availability.IfNeeded
               ? 'bg-amber-500 text-white'
               : 'text-gray-400 hover:text-white'
               }`}
           >
             If Needed
-          </button>
+          </Button>
         </div>
-      </div>
-
-      {/* Kerb field */}
-      <div className="pb-3 flex flex-col gap-3">
-        <input type="text" placeholder="enter your kerb" id="kerbInput"
-        className="w-full px-6 py-2 text-white rounded-md transition-all duration-200 text-sm font-medium text-gray-700">
-        </input>
       </div>
 
       {/* Action buttons */}

@@ -35,26 +35,53 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
   // Store availability info for future use
   const { setAvailabilityData } = useAvailability();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const availabilityArray = Array.from(availability);
     const ifNeededArray = Array.from(ifNeeded);
-    const input = document.getElementById("kerbInput") as HTMLInputElement;
-    const kerb = input.value
+
+    const kerbInput = document.getElementById("kerbInput") as HTMLInputElement;
+    const kerb = kerbInput.value;
+
+    const nameInput = document.getElementById("nameInput") as HTMLInputElement;
+    const name = nameInput.value;
     
     if (kerb.length == 0) {
       alert(`Please Enter Your Kerb`);
       return;
-    }
-    
-    const newAvailabilityData = {
-      kerb: kerb,
-      availabilityArray: availabilityArray,
-      ifNeededArray: ifNeededArray,
+    } else if (name.length == 0) {
+      alert(`Please Enter Your Name`);
     }
 
-    console.log(newAvailabilityData);
+    // const newAvailabilityData = {
+    //   kerb: kerb,
+    //   availabilityArray: availabilityArray,
+    //   ifNeededArray: ifNeededArray,
+    // }
 
-    setAvailabilityData(newAvailabilityData);
+    // console.log(newAvailabilityData);
+
+    // setAvailabilityData(newAvailabilityData);
+
+    const jsonAvailability = JSON.stringify(availabilityArray);
+    const jsonIfNeeded = JSON.stringify(ifNeededArray);
+
+    const res = await fetch('../../api/upsert-availability', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        username: kerb,
+        name: name,
+        available: jsonAvailability,
+        if_needed: jsonIfNeeded,
+      })
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      console.log('Upsert success:', result.data);
+    } else {
+      console.error('Upsert error:', result.error);
+    }
   };
 
   const clearAll = () => {
