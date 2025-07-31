@@ -254,7 +254,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
       <div className="inline-block min-w-full">
         {/* Header with dates */}
         <div className="flex border-b border-gray-600">
-          <div className="w-16 flex-shrink-0 border-r border-gray-600"></div>{' '}
+          <div className="w-16 shrink-0 border-r border-gray-600"></div>{' '}
           {/* Empty corner */}
           {currentDates.map((date) => (
             <div
@@ -273,7 +273,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
             className="flex border-b border-gray-700"
           >
             {/* Time label */}
-            <div className="w-16 flex-shrink-0 text-right pr-3 py-1 text-xs text-gray-400 font-mono flex items-center justify-end border-r border-gray-600">
+            <div className="w-16 shrink-0 text-right pr-3 py-1 text-xs text-gray-400 font-mono flex items-center justify-end border-r border-gray-600">
               {time}
             </div>
 
