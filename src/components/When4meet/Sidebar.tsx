@@ -7,6 +7,7 @@ interface SidebarProps {
   eventName: string;
   selectedType: AvailabilitySelection;
   setSelectedType: (type: AvailabilitySelection) => void;
+  handleLoad: () => void;
   handleSubmit: () => void;
   clearAll: () => void;
   currentPage?: number;
@@ -17,6 +18,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   eventName,
   selectedType,
   setSelectedType,
+  handleLoad,
   handleSubmit,
   clearAll,
   currentPage = 0,
@@ -100,6 +102,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Action buttons */}
       <div className="flex flex-col gap-3">
+        <button
+          onClick={handleLoad}
+          className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-300 transition-all duration-200 text-sm font-medium"
+        >
+          Load Availability
+        </button>
         <button
           onClick={handleSubmit}
           className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all duration-200 text-sm font-medium"

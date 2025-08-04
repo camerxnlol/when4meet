@@ -32,11 +32,36 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
   const [availability, setAvailability] = useState<Set<string>>(new Set());
   const [ifNeeded, setIfNeeded] = useState<Set<string>>(new Set());
 
-  // Store availability info for future use
-  const { setAvailabilityData } = useAvailability();
+  const handleLoad = async () => {
+    const kerbInput = document.getElementById("kerbInput") as HTMLInputElement;
+    const kerb = kerbInput.value;
+
+    const nameInput = document.getElementById("nameInput") as HTMLInputElement;
+    const name = nameInput.value;
+
+    if (kerb.length == 0) {
+      alert(`Please Enter Your Kerb`);
+      return;
+    } else if (name.length == 0) {
+      alert(`Please Enter Your Name`);
+    }
+
+    const res = await fetch(`../../api/load-availability?username=${kerb}`);
+    const data = await res.json();
+
+    if (res.ok) {
+      const availability: string[] = JSON.parse(data[0].available);
+      const ifNeeded: string[] = JSON.parse(data[0].if_needed);
+      setAvailability(new Set<string>(availability));
+      setIfNeeded(new Set<string>(ifNeeded));
+    } else if (res.status == 500) {
+      alert(`No Previous Data for ${kerb}`);
+    }
+  }
 
   const handleSubmit = async () => {
     const availabilityArray = Array.from(availability);
+    console.log(availabilityArray);
     const ifNeededArray = Array.from(ifNeeded);
 
     const kerbInput = document.getElementById("kerbInput") as HTMLInputElement;
@@ -51,16 +76,6 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
     } else if (name.length == 0) {
       alert(`Please Enter Your Name`);
     }
-
-    // const newAvailabilityData = {
-    //   kerb: kerb,
-    //   availabilityArray: availabilityArray,
-    //   ifNeededArray: ifNeededArray,
-    // }
-
-    // console.log(newAvailabilityData);
-
-    // setAvailabilityData(newAvailabilityData);
 
     const jsonAvailability = JSON.stringify(availabilityArray);
     const jsonIfNeeded = JSON.stringify(ifNeededArray);
@@ -122,6 +137,7 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
             selectedType={selectedType}
             setSelectedType={setSelectedType}
             handleSubmit={handleSubmit}
+            handleLoad={handleLoad}
             clearAll={clearAll}
             currentPage={currentPage}
             totalPages={totalPages}
