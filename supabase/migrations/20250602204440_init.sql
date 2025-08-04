@@ -13,30 +13,6 @@ CREATE TABLE public.users (
     last_availability_update TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
-COMMENT ON COLUMN public.users.last_availability_update IS 'Automatically updated via trigger';
-
-CREATE OR REPLACE FUNCTION public.handle_user_update_timestamp()
-RETURNS TRIGGER AS $$
-DECLARE
-    affected_user_id INTEGER;
-BEGIN
-    IF (TG_OP = 'DELETE') THEN
-        affected_user_id = OLD.user_id;
-    ELSE
-        affected_user_id = NEW.user_id;
-    END IF;
-
-    UPDATE public.users
-    SET last_availability_update = CURRENT_TIMESTAMP
-    WHERE id = affected_user_id;
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
-
-CREATE TRIGGER on_availability_change
-    BEFORE UPDATE ON public.users
-    FOR EACH ROW
-    EXECUTE FUNCTION public.handle_user_update_timestamp();
 
 CREATE TABLE public.weekly_availabilities (
     user_id INTEGER NOT NULL,
