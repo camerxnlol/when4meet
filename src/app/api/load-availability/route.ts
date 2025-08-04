@@ -10,6 +10,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const username = searchParams.get('username')
 
+
   const {data, error} = await supabase
     .from('user_availability')
     .select('*')

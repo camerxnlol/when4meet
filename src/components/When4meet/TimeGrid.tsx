@@ -36,6 +36,8 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   });
   const [previewKeys, setPreviewKeys] = useState<Set<string>>(new Set());
 
+  console.log("availability", availability);
+
   // Generate time slots for 30-minute time intervals
   const generateTimeSlots = () => {
     const slots: string[] = [];
@@ -99,8 +101,26 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   };
 
   // Create unique key for each 30-minute block
-  const createSlotKey = (date: Date, time: string): string =>
-    `${date.toISOString()}-${time}`;
+  // const createSlotKey = (date: Date, time: string): string =>
+  //   `${date.toISOString()}-${time}`;
+  const createSlotKey = (date: Date, time: string): string => {
+    // Parse time string (e.g. "10:30AM") and combine with date
+    const [hourStr, minuteStr] = time.match(/\d+/g) ?? [];
+    if (hourStr == undefined) {
+      return "something wrong";
+    }
+    const isPM = time.toUpperCase().includes("PM");
+    let hour = parseInt(hourStr);
+    const minute = parseInt(minuteStr);
+
+    if (isPM && hour !== 12) hour += 12;
+    if (!isPM && hour === 12) hour = 0;
+
+    const combined = new Date(date);
+    combined.setHours(hour, minute, 0, 0); // clear seconds & ms
+
+    return combined.toISOString(); // unique and consistent
+  };
 
   const updateAvailabilitySet = (
     keys: string[],

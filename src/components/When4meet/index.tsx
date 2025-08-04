@@ -44,16 +44,17 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
       return;
     } else if (name.length == 0) {
       alert(`Please Enter Your Name`);
+      return;
     }
 
     const res = await fetch(`../../api/load-availability?username=${kerb}`);
     const data = await res.json();
 
     if (res.ok) {
-      const availability: string[] = JSON.parse(data[0].available);
-      const ifNeeded: string[] = JSON.parse(data[0].if_needed);
-      setAvailability(new Set<string>(availability));
-      setIfNeeded(new Set<string>(ifNeeded));
+      const newAvailability: string[] = JSON.parse(data[0].available);
+      const newIfNeeded: string[] = JSON.parse(data[0].if_needed);
+      setAvailability(new Set<string>(newAvailability));
+      setIfNeeded(new Set<string>(newIfNeeded));
     } else if (res.status == 500) {
       alert(`No Previous Data for ${kerb}`);
     }
