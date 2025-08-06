@@ -36,8 +36,6 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   });
   const [previewKeys, setPreviewKeys] = useState<Set<string>>(new Set());
 
-  console.log("availability", availability);
-
   // Generate time slots for 30-minute time intervals
   const generateTimeSlots = () => {
     const slots: string[] = [];

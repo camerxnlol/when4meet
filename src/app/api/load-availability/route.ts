@@ -16,9 +16,5 @@ export async function GET(req: Request) {
     .select('*')
     .eq('username', username);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-
   return NextResponse.json(data)
 }

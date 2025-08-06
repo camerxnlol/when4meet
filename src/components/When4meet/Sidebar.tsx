@@ -42,8 +42,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div className="w-64 shrink-0">
       {/* Event name */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-light tracking-wide text-white mb-2">
+      <div className="mb-8 pt-10">
+        <h1 className="text-2xl font-semibold tracking-wide text-white mb-2">
           {eventName}
         </h1>
         <p className="text-gray-400 text-sm whitespace-nowrap">

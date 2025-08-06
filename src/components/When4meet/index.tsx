@@ -36,26 +36,20 @@ const When4meet: React.FC<When4meetProps> = ({ eventData }) => {
     const kerbInput = document.getElementById("kerbInput") as HTMLInputElement;
     const kerb = kerbInput.value;
 
-    const nameInput = document.getElementById("nameInput") as HTMLInputElement;
-    const name = nameInput.value;
-
     if (kerb.length == 0) {
       alert(`Please Enter Your Kerb`);
-      return;
-    } else if (name.length == 0) {
-      alert(`Please Enter Your Name`);
       return;
     }
 
     const res = await fetch(`../../api/load-availability?username=${kerb}`);
     const data = await res.json();
 
-    if (res.ok) {
+    if (data.length != 0) {
       const newAvailability: string[] = JSON.parse(data[0].available);
       const newIfNeeded: string[] = JSON.parse(data[0].if_needed);
       setAvailability(new Set<string>(newAvailability));
       setIfNeeded(new Set<string>(newIfNeeded));
-    } else if (res.status == 500) {
+    } else {
       alert(`No Previous Data for ${kerb}`);
     }
   }
