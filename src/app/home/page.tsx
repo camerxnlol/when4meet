@@ -24,10 +24,10 @@ const getMultipleWeeks = (numWeeks = 4) => {
     return allDates;
 };
 
-// Generate 4 weeks of dates
+// Generate 5 weeks of dates
 const allWeeksData = {
     name: "Enter Your Availability",
-    dates: getMultipleWeeks(4),
+    dates: getMultipleWeeks(5),
 };
 
 export default function HomePage() {
