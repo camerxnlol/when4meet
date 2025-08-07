@@ -80,6 +80,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           Add Member
         </button>
+        <button
+          onClick={handleAddMember}
+          className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-300 transition-all duration-200 text-sm font-medium"
+        >
+          Remove Member
+        </button>
         {/* <button
           onClick={handleSubmit}
           className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all duration-200 text-sm font-medium"
