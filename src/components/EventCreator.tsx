@@ -107,10 +107,10 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
       return;
     }
 
-    if (selectedDates.size === 0) {
-      alert('Please select at least one date');
-      return;
-    }
+    // if (selectedDates.size === 0) {
+    //   alert('Please select at least one date');
+    //   return;
+    // }
 
     // Convert selected dates to a more usable format
     const eventDates = Array.from(selectedDates)
@@ -160,77 +160,6 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
               placeholder="Enter event name..."
               className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
-          </div>
-
-          {/* Calendar */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-300 mb-3">
-              Select Dates
-            </label>
-
-            {/* Calendar Header */}
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={goToPreviousMonth}
-                className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
-              >
-                ←
-              </button>
-              <h3 className="text-lg font-medium text-white">{monthName}</h3>
-              <button
-                onClick={goToNextMonth}
-                className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors"
-              >
-                →
-              </button>
-            </div>
-
-            {/* Days of week header */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
-              {daysOfWeek.map((day) => (
-                <div
-                  key={day}
-                  className="text-center text-xs font-medium text-gray-400 py-2"
-                >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar grid */}
-            <div className="grid grid-cols-7 gap-1">
-              {calendarDays.map((day, index) => {
-                if (day === null) {
-                  return <div key={`empty-${index}`} className="h-10"></div>;
-                }
-
-                const isSelected = isDateSelected(day);
-                const isPast = isDateInPast(day);
-                const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${day}`;
-
-                return (
-                  <button
-                    key={dateKey}
-                    onClick={() => !isPast && toggleDate(day)}
-                    disabled={isPast}
-                    className={`h-10 rounded-md text-sm font-medium transition-all duration-200 ${isPast
-                      ? 'text-gray-600 cursor-not-allowed'
-                      : isSelected
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                        : 'text-gray-300 hover:bg-gray-700'
-                      }`}
-                  >
-                    {day}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Selected dates display */}
-          <div className="mb-8 p-4 bg-gray-700 rounded-md">
-            <p className="text-sm text-gray-300 mb-2">Selected dates:</p>
-            <p className="text-sm text-emerald-400">{getSelectedDatesText()}</p>
           </div>
 
           {/* Action buttons */}

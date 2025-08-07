@@ -18,9 +18,6 @@ interface EventWhen4meetProps {
 const EventWhen4meet: React.FC<EventWhen4meetProps> = ({ eventData }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const daysPerPage = 7;
-  // const [selectedType, setSelectedType] = useState<AvailabilitySelection>(
-  //   Availability.Available
-  // );
 
   const totalPages = Math.ceil(eventData.dates.length / daysPerPage);
   const currentDates = eventData.dates.slice(
@@ -87,7 +84,6 @@ const EventWhen4meet: React.FC<EventWhen4meetProps> = ({ eventData }) => {
             />
             <EventTimeGrid
               currentDates={currentDates}
-              // selectedType={selectedType}
               availabilityMap={availabilityMap}
               setAvailabilityMap={setAvailabilityMap}
               ifNeededMap={ifNeededMap}

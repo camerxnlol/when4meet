@@ -5,11 +5,6 @@ import { Input } from '@heroui/input';
 
 interface SidebarProps {
   eventName: string;
-  // selectedType: AvailabilitySelection;
-  // setSelectedType: (type: AvailabilitySelection) => void;
-  // handleLoad: () => void;
-  // handleSubmit: () => void;
-  // clearAll: () => void;
   handleAddMember: () => void;
   hoverSlot: string;
   currentPage?: number;
@@ -18,11 +13,6 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({
   eventName,
-  // selectedType,
-  // setSelectedType,
-  // handleLoad,
-  // handleSubmit,
-  // clearAll,
   handleAddMember,
   hoverSlot,
   currentPage = 0,
@@ -86,21 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           Remove Member
         </button>
-        {/* <button
-          onClick={handleSubmit}
-          className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all duration-200 text-sm font-medium"
-        >
-          Submit Availability
-        </button>
-        <button
-          onClick={clearAll}
-          className="w-full px-6 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-all duration-200 text-sm font-medium"
-        >
-          Clear All
-        </button> */}
       </div>
-
-      {/* Name display on hover */}
     </div>
   );
 };

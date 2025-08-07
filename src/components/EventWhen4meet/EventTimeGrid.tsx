@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 
 interface EventTimeGridProps {
   currentDates: Date[];
-  // selectedType: AvailabilitySelection;
   availabilityMap: Map<string, Set<string>>; // ('timeslot key' -> {kerbs})
   setAvailabilityMap: (type: Map<string, Set<string>>) => void;
   ifNeededMap: Map<string, Set<string>>; // ('timeslot key' -> {kerbs})
@@ -16,7 +15,6 @@ interface EventTimeGridProps {
 
 export const EventTimeGrid: React.FC<EventTimeGridProps> = ({
   currentDates,
-  // selectedType,
   availabilityMap,
   setAvailabilityMap,
   ifNeededMap,
