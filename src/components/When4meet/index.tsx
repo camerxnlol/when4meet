@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { useAvailability } from '../../context/AvailabilityContext'
 import { TimeGrid } from './TimeGrid';
 import { Pagination } from './Pagination';
 import { Sidebar } from './Sidebar';

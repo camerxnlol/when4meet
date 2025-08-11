@@ -1,10 +1,8 @@
 'use client';
 import React, { useState } from 'react';
-import { useAvailability } from '../../context/AvailabilityContext'
 import { EventTimeGrid } from './EventTimeGrid';
 import { Pagination } from './Pagination';
 import { Sidebar } from './Sidebar';
-import { Availability, AvailabilitySelection } from '@/lib/availability';
 
 interface EventData {
   name: string;
@@ -40,7 +38,7 @@ const EventWhen4meet: React.FC<EventWhen4meetProps> = ({ eventData }) => {
     const res = await fetch(`../../api/load-availability?username=${kerb}`);
     const data = await res.json();
 
-    var memberAvailability: string[], memberIfNeeded: string[];
+    let memberAvailability: string[], memberIfNeeded: string[];
     if (data.length != 0) {
       memberAvailability = JSON.parse(data[0].available);
       memberIfNeeded = JSON.parse(data[0].if_needed);

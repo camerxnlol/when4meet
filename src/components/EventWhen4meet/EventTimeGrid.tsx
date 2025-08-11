@@ -1,5 +1,4 @@
-import { Availability, AvailabilitySelection } from '@/lib/availability';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 interface EventTimeGridProps {
   currentDates: Date[];
@@ -16,13 +15,8 @@ interface EventTimeGridProps {
 export const EventTimeGrid: React.FC<EventTimeGridProps> = ({
   currentDates,
   availabilityMap,
-  setAvailabilityMap,
   ifNeededMap,
-  setIfNeededMap,
   members,
-  setMembers,
-  hoverSlot,
-  setHoverSlot,
 }) => {
   
   // Generate time slots for 30-minute time intervals
@@ -114,11 +108,6 @@ export const EventTimeGrid: React.FC<EventTimeGridProps> = ({
     }
   }
 
-  const handleMouseOver = (date: Date, time: string) => {
-    const key = createSlotKey(date, time);
-
-  }
-
   return (
     <div className="overflow-x-auto">
       <div className="inline-block min-w-full">
@@ -163,8 +152,6 @@ export const EventTimeGrid: React.FC<EventTimeGridProps> = ({
                   <div
                     className={`w-full h-full cursor-pointer transition-all duration-150 bg-emerald-500`}
                     style={blockStyle}
-                    onMouseEnter={() => setHoverSlot(createSlotKey(date, time))}
-                    onMouseLeave={() => setHoverSlot("")}
                   />
                 </div>
               );

@@ -1,4 +1,3 @@
-import { Availability, AvailabilitySelection } from '@/lib/availability';
 import React from 'react';
 import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
@@ -14,7 +13,6 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   eventName,
   handleAddMember,
-  hoverSlot,
   currentPage = 0,
   totalPages = 1,
 }) => {
