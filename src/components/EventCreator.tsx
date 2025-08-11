@@ -1,5 +1,7 @@
 'use client';
 import React, { useState } from 'react';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
 
 interface EventData {
   name: string;
@@ -107,25 +109,9 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
       return;
     }
 
-    // if (selectedDates.size === 0) {
-    //   alert('Please select at least one date');
-    //   return;
-    // }
+    
 
-    // Convert selected dates to a more usable format
-    const eventDates = Array.from(selectedDates)
-      .map((dateKey: string) => {
-        const [year, month, day] = dateKey.split('-').map(Number);
-        return new Date(year, month, day);
-      })
-      .sort((a: Date, b: Date) => a.getTime() - b.getTime());
-
-    const eventData = {
-      name: eventName,
-      dates: eventDates,
-    };
-
-    onEventCreated(eventData);
+    // onEventCreated(eventData);
   };
 
   const { monthName, daysInMonth, startingDayOfWeek } = getCurrentMonthInfo();
@@ -146,38 +132,27 @@ const EventCreator: React.FC<EventCreatorProps> = ({ onEventCreated }) => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6 pt-24">
-      <div className="max-w-2xl w-full">
-        <div className="bg-gray-800 rounded-lg p-8 shadow-2xl">
+      <div className="max-w-xl w-full">
+        <div className="bg-gray-800 rounded-lg p-6 shadow-2xl">
           {/* Event Name Input */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-300 mb-3">
-              Event Name
-            </label>
-            <input
-              type="text"
-              value={eventName}
-              onChange={(e) => setEventName(e.target.value)}
-              placeholder="Enter event name..."
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          <div className="mb-8 w-full flex-wrap bg-gray-700 rounded-md gap-4">
+            <Input
+              isClearable
+              isRequired
+              label="Event Name"
+              placeholder="Enter your event name"
+              type="string"
+              id="eventNameInput"
             />
           </div>
 
           {/* Action buttons */}
-          <div className="flex gap-4">
+          <div className="flex gap-2">
             <button
               onClick={handleCreateEvent}
               className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors font-medium"
             >
               Create Event
-            </button>
-            <button
-              onClick={() => {
-                setEventName('');
-                setSelectedDates(new Set());
-              }}
-              className="px-6 py-3 bg-gray-600 text-gray-300 rounded-md hover:bg-gray-500 transition-colors font-medium"
-            >
-              Clear
             </button>
           </div>
         </div>

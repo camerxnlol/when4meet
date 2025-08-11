@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import EventWhen4meet from '@/components/Event';
+import EventWhen4meet from '@/components/EventWhen4meet';
 import { useEvent } from '../../context/EventContext'
 
 // Get multiple weeks starting from the current week

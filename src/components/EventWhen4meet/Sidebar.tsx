@@ -63,19 +63,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Action buttons */}
-      <div className="flex flex-col gap-3">
-        <button
-          onClick={handleAddMember}
+      <div className="flex mt-4 flex-col gap-3">
+        <Button
+          onPress={handleAddMember}
           className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-300 transition-all duration-200 text-sm font-medium"
         >
           Add Member
-        </button>
-        <button
-          onClick={handleAddMember}
+        </Button>
+        <Button
+          onPress={handleAddMember}
           className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-300 transition-all duration-200 text-sm font-medium"
         >
           Remove Member
-        </button>
+        </Button>
       </div>
     </div>
   );
