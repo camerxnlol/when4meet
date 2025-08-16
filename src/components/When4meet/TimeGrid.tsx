@@ -99,8 +99,26 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
   };
 
   // Create unique key for each 30-minute block
-  const createSlotKey = (date: Date, time: string): string =>
-    `${date.toISOString()}-${time}`;
+  // const createSlotKey = (date: Date, time: string): string =>
+  //   `${date.toISOString()}-${time}`;
+  const createSlotKey = (date: Date, time: string): string => {
+    // Parse time string (e.g. "10:30AM") and combine with date
+    const [hourStr, minuteStr] = time.match(/\d+/g) ?? [];
+    if (hourStr == undefined) {
+      return "something wrong";
+    }
+    const isPM = time.toUpperCase().includes("PM");
+    let hour = parseInt(hourStr);
+    const minute = parseInt(minuteStr);
+
+    if (isPM && hour !== 12) hour += 12;
+    if (!isPM && hour === 12) hour = 0;
+
+    const combined = new Date(date);
+    combined.setHours(hour, minute, 0, 0); // clear seconds & ms
+
+    return combined.toISOString(); // unique and consistent
+  };
 
   const updateAvailabilitySet = (
     keys: string[],
@@ -128,12 +146,15 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
       setIfNeeded(newIfNeeded);
     } else {
       // For deselect, remove from both sets
+      
       const newAvail = new Set(availability);
-      keys.forEach((key) => newAvail.delete(key));
-      setAvailability(newAvail);
-
       const newIfNeeded = new Set(ifNeeded);
-      keys.forEach((key) => newIfNeeded.delete(key));
+
+      keys.forEach((key) => {
+        newAvail.delete(key); 
+        newIfNeeded.delete(key);
+      });
+      setAvailability(newAvail);
       setIfNeeded(newIfNeeded);
     }
   };
@@ -254,7 +275,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
       <div className="inline-block min-w-full">
         {/* Header with dates */}
         <div className="flex border-b border-gray-600">
-          <div className="w-16 flex-shrink-0 border-r border-gray-600"></div>{' '}
+          <div className="w-16 shrink-0 border-r border-gray-600"></div>{' '}
           {/* Empty corner */}
           {currentDates.map((date) => (
             <div
@@ -273,7 +294,7 @@ export const TimeGrid: React.FC<TimeGridProps> = ({
             className="flex border-b border-gray-700"
           >
             {/* Time label */}
-            <div className="w-16 flex-shrink-0 text-right pr-3 py-1 text-xs text-gray-400 font-mono flex items-center justify-end border-r border-gray-600">
+            <div className="w-16 shrink-0 text-right pr-3 py-1 text-xs text-gray-400 font-mono flex items-center justify-end border-r border-gray-600">
               {time}
             </div>
 

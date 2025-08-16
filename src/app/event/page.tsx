@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
-import When4meet from '@/components/When4meet';
+import EventWhen4meet from '@/components/EventWhen4meet';
+import { useEvent } from '../../context/EventContext'
 
 // Get multiple weeks starting from the current week
 const getMultipleWeeks = (numWeeks = 4) => {
@@ -24,12 +25,13 @@ const getMultipleWeeks = (numWeeks = 4) => {
     return allDates;
 };
 
-// Generate 5 weeks of dates
-const allWeeksData = {
-    name: "Enter Your Availability",
-    dates: getMultipleWeeks(5),
-};
+export default function EventPage() {
+    // Generate 1 week of dates
+    const allWeeksData = {
+        name: "Sample Event Name",
+        dates: getMultipleWeeks(1),
+    };
 
-export default function HomePage() {
-    return <When4meet eventData={allWeeksData} />;
+    // if (!eventData) return <p>Loading...</p>;
+    return <EventWhen4meet eventData={allWeeksData} />;
 } 

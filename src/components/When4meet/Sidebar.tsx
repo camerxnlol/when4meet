@@ -1,10 +1,13 @@
 import { Availability, AvailabilitySelection } from '@/lib/availability';
 import React from 'react';
+import { Button } from '@heroui/button';
+import { Input } from '@heroui/input';
 
 interface SidebarProps {
   eventName: string;
   selectedType: AvailabilitySelection;
   setSelectedType: (type: AvailabilitySelection) => void;
+  handleLoad: () => void;
   handleSubmit: () => void;
   clearAll: () => void;
   currentPage?: number;
@@ -15,6 +18,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   eventName,
   selectedType,
   setSelectedType,
+  handleLoad,
   handleSubmit,
   clearAll,
   currentPage = 0,
@@ -36,10 +40,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className="w-64 flex-shrink-0">
+    <div className="w-64 shrink-0">
       {/* Event name */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-light tracking-wide text-white mb-2">
+      <div className="mb-8 pt-10">
+        <h1 className="text-2xl font-semibold tracking-wide text-white mb-2">
           {eventName}
         </h1>
         <p className="text-gray-400 text-sm whitespace-nowrap">
@@ -52,44 +56,70 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
+      {/* Kerb + Name fields */}
+      <div className="flex flex-col gap-3">
+        <div className="w-full flex-wrap bg-gray-700 rounded-md gap-4 transition-all duration-200 text-sm font-medium">
+          <Input isClearable
+                 isRequired
+                 label="Kerb"
+                 placeholder="Enter your Kerb"
+                 type="string"
+                 id="kerbInput"/>
+        </div>
+        <div className="w-full flex-wrap bg-gray-700 rounded-md gap-4 transition-all duration-200 text-sm font-medium">
+          <Input isClearable
+                 isRequired
+                 label="Name"
+                 placeholder="Enter your Name"
+                 type="string"
+                 id="nameInput"/>
+        </div>
+      </div>
+
       {/* Availability Type Toggle */}
-      <div className="mb-8">
+      <div className="mt-5 py-3">
         <div className="inline-flex rounded-md bg-gray-800 p-1 w-full">
-          <button
-            onClick={() => setSelectedType(Availability.Available)}
+          <Button
+            onPress={() => setSelectedType(Availability.Available)}
             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === Availability.Available
               ? 'bg-emerald-600 text-white'
               : 'text-gray-400 hover:text-white'
               }`}
           >
             Available
-          </button>
-          <button
-            onClick={() => setSelectedType(Availability.IfNeeded)}
+          </Button>
+          <Button
+            onPress={() => setSelectedType(Availability.IfNeeded)}
             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${selectedType === Availability.IfNeeded
               ? 'bg-amber-500 text-white'
               : 'text-gray-400 hover:text-white'
               }`}
           >
             If Needed
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Action buttons */}
       <div className="flex flex-col gap-3">
-        <button
-          onClick={handleSubmit}
+        <Button
+          onPress={handleLoad}
+          className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-300 transition-all duration-200 text-sm font-medium"
+        >
+          Load Availability
+        </Button>
+        <Button
+          onPress={handleSubmit}
           className="w-full px-6 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all duration-200 text-sm font-medium"
         >
           Submit Availability
-        </button>
-        <button
-          onClick={clearAll}
+        </Button>
+        <Button
+          onPress={clearAll}
           className="w-full px-6 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600 transition-all duration-200 text-sm font-medium"
         >
           Clear All
-        </button>
+        </Button>
       </div>
     </div>
   );

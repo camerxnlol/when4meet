@@ -7,11 +7,11 @@ import {
   decodeAvailabilityString,
 } from '@/lib/availability';
 
-type User = Database['public']['Tables']['users']['Row'];
-type Event = Database['public']['Tables']['events']['Row'];
-type EventUser = Database['public']['Tables']['event_users']['Row'];
-type WeeklyAvailability =
-  Database['public']['Tables']['weekly_availabilities']['Row'];
+// type User = Database['public']['Tables']['users']['Row'];
+// type Event = Database['public']['Tables']['events']['Row'];
+// type EventUser = Database['public']['Tables']['event_users']['Row'];
+// type WeeklyAvailability =
+//   Database['public']['Tables']['weekly_availabilities']['Row'];
 
 class DbClient {
   private client: SupabaseClient<Database>;
